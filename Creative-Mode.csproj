@@ -71,6 +71,9 @@
 		</Reference>
 	</ItemGroup>
 	<ItemGroup>
+		<None Update=".thumb.png">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
 		<None Update=".manifest.json">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
