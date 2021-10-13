@@ -1,4 +1,7 @@
 {
     "LoadGroup": 0,
-    "Version": "1.0"
+    "Version": "1.0",
+    "UniqueModId": "Creative-Mode",
+    "Title": "Creative Mode",
+    "MultiplayerMode": 0
 }

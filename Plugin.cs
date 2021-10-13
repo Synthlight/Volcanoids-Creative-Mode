@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Base_Mod;
 using JetBrains.Annotations;
@@ -6,10 +7,8 @@ using JetBrains.Annotations;
 namespace Creative_Mode {
     [UsedImplicitly]
     public class EnableDevMode : BaseGameMod {
-        protected override string ModName => "Creative-Mode";
-
         public override void OnInitData() {
-            var categoryList = (from recipe in GameResources.Instance.Recipes
+            var categoryList = (from recipe in RuntimeAssetDatabase.Get<Recipe>()
                                 where recipe.Categories != null && recipe.Categories.Length > 0
                                 from category in recipe.Categories
                                 where !string.IsNullOrEmpty(category.name)
@@ -40,17 +39,17 @@ namespace Creative_Mode {
             // Scrap
             var newScrapCategoryList = new[] {categoryList.GetCategory("ScrapTier1")};
 
-            foreach (var recipe in GameResources.Instance.Recipes) {
+            foreach (var recipe in RuntimeAssetDatabase.Get<Recipe>()) {
                 // Hide worktable variations of recipes.
                 if (recipe.name.Contains("WorktableRecipe") && recipe.name != "WorktableRecipe"
                     // And the x2/x5 variants.
                     || recipe.name.EndsWith("Recipe2")) {
-                    recipe.Categories = new RecipeCategory[0];
+                    recipe.Categories = Array.Empty<RecipeCategory>();
                     continue;
                 }
 
-                recipe.Inputs           = new InventoryItem[0];
-                recipe.RequiredUpgrades = new ItemDefinition[0];
+                recipe.Inputs           = Array.Empty<InventoryItem>();
+                recipe.RequiredUpgrades = Array.Empty<ItemDefinition>();
                 recipe.ProductionTime   = 1f;
 
                 if (recipe.Categories.Contains("CraftingTier") || recipe.Categories.Contains("ProductionTier")) {
