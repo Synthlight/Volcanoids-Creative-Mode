@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net46</TargetFramework>
+		<TargetFramework>netstandard21</TargetFramework>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
 		<Platforms>x64</Platforms>
@@ -10,6 +10,7 @@
 		<Company>None</Company>
 		<RootNamespace>Creative_Mode</RootNamespace>
 		<DebugType>full</DebugType>
+		<MSBuildWarningsAsMessages>MSB3277</MSBuildWarningsAsMessages>
 	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Base-Mod\Base-Mod.csproj">
