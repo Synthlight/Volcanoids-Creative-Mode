@@ -21,7 +21,7 @@
 	</ItemGroup>
 	<ItemGroup>
 		<Reference Include="Volcanoids">
-			<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Volcanoids\Volcanoids_Data\Managed\Volcanoids.dll</HintPath>
+			<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Volcanoids\Volcanoids_Data\Managed\publicized_assemblies\Volcanoids_publicized.dll</HintPath>
 			<Private>false</Private>
 		</Reference>
 		<Reference Include="Unity.MultiplayerHLAPI.Runtime">

@@ -10,7 +10,7 @@ namespace Creative_Mode;
 public class EnableDevMode : BaseGameMod {
     public override void OnInitData() {
         var categoryList = (from recipe in RuntimeAssetDatabase.Get<Recipe>()
-                            where recipe.Categories != null && recipe.Categories.Length > 0
+                            where recipe.Categories is {Length: > 0}
                             from category in recipe.Categories
                             where !string.IsNullOrEmpty(category.name)
                             orderby category.name
@@ -19,22 +19,22 @@ public class EnableDevMode : BaseGameMod {
 
         // Production
         var newProdCategoryList = (from category in categoryList
-                                   where category.name == "CraftingTier1"
-                                         || category.name == "ProductionTier1"
-                                         || category.name == "CraftingTierSubmarine"
-                                         || category.name == "ProductionTierSubmarine"
+                                   where category.name is "CraftingTier1"
+                                       or "ProductionTier1"
+                                       or "CraftingTierSubmarine"
+                                       or "ProductionTierSubmarine"
                                    select category).ToArray();
 
         // Research
         var newResearchCategoryList = (from category in categoryList
-                                       where category.name == "ResearchTier1"
-                                             || category.name == "CraftingResearchTier1"
+                                       where category.name is "ResearchTier1"
+                                           or "CraftingResearchTier1"
                                        select category).ToArray();
 
         // Refinery
         var newRefineryCategoryList = (from category in categoryList
-                                       where category.name == "RefinementTier1"
-                                             || category.name == "CraftingRefineryTier1"
+                                       where category.name is "RefinementTier1"
+                                           or "CraftingRefineryTier1"
                                        select category).ToArray();
 
         // Scrap
@@ -45,12 +45,12 @@ public class EnableDevMode : BaseGameMod {
             if (recipe.name.Contains("WorktableRecipe") && recipe.name != "WorktableRecipe"
                 // And the x2/x5 variants.
                 || recipe.name.EndsWith("Recipe2")) {
-                recipe.Categories = Array.Empty<RecipeCategory>();
+                recipe.Categories = [];
                 continue;
             }
 
-            recipe.Inputs           = Array.Empty<InventoryItem>();
-            recipe.RequiredUpgrades = Array.Empty<ItemDefinition>();
+            recipe.Inputs           = [];
+            recipe.RequiredUpgrades = [];
             recipe.ProductionTime   = 1f;
 
             if (recipe.Categories.Contains("CraftingTier") || recipe.Categories.Contains("ProductionTier")) {
@@ -68,6 +68,11 @@ public class EnableDevMode : BaseGameMod {
             if (recipe.Categories.Contains("ScrapTier")) {
                 recipe.Categories = newScrapCategoryList;
             }
+        }
+
+        foreach (var recipe in RuntimeAssetDatabase.Get<RecipeUnlockGroup>()) {
+            recipe.Items   = [];
+            recipe.Recipes = [];
         }
 
         base.OnInitData();
