@@ -10,7 +10,9 @@
 		<Company>None</Company>
 		<RootNamespace>Creative_Mode</RootNamespace>
 		<DebugType>full</DebugType>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<MSBuildWarningsAsMessages>MSB3277</MSBuildWarningsAsMessages>
+		<LangVersion>latest</LangVersion>
 	</PropertyGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\Base-Mod\Base-Mod.csproj">
