@@ -1,12 +1,18 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reflection;
 using Base_Mod;
+using HarmonyLib;
 using JetBrains.Annotations;
+using UnityEngine;
 
 namespace Creative_Mode;
 
 [UsedImplicitly]
 public class EnableDevMode : BaseGameMod {
+    protected override bool UseHarmony => true;
+
     private static readonly GUID CRAFTING_TABLE_PROD         = GUID.Parse("f61e601e773ff884497d265728ceacaa");
     private static readonly GUID CRAFTING_TABLE_REF          = GUID.Parse("655ac6f1bdb43da4f9ee18c6285b41ff");
     private static readonly GUID CRAFTING_TABLE_SCI          = GUID.Parse("493fb6e4e66a02a4a8c512e0b94b5414");
@@ -127,6 +133,25 @@ public class EnableDevMode : BaseGameMod {
         }
 
         base.OnInitData();
+    }
+}
+
+// Workaround for: https://discord.com/channels/444244464903651348/589065025138851850/1255977550707163156
+[HarmonyPatch]
+[UsedImplicitly]
+[SuppressMessage("ReSharper", "InconsistentNaming")]
+public static class FixIndexOutOfRangeException {
+    [HarmonyTargetMethod]
+    [UsedImplicitly]
+    public static MethodBase TargetMethod() {
+        return typeof(ProducerSync).GetProperty(nameof(ProducerSync.FirstInputIcon), BindingFlags.Public | BindingFlags.Instance)?.GetGetMethod();
+    }
+
+    [UsedImplicitly]
+    [HarmonyPostfix]
+    public static bool Prefix(ref Sprite __result) {
+        __result = null;
+        return false;
     }
 }
 
