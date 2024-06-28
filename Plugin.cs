@@ -1,12 +1,17 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reflection;
 using Base_Mod;
+using HarmonyLib;
 using JetBrains.Annotations;
 
 namespace Creative_Mode;
 
 [UsedImplicitly]
 public class EnableDevMode : BaseGameMod {
+    protected override bool UseHarmony => true;
+
     private static readonly GUID CRAFTING_TABLE_PROD         = GUID.Parse("f61e601e773ff884497d265728ceacaa");
     private static readonly GUID CRAFTING_TABLE_REF          = GUID.Parse("655ac6f1bdb43da4f9ee18c6285b41ff");
     private static readonly GUID CRAFTING_TABLE_SCI          = GUID.Parse("493fb6e4e66a02a4a8c512e0b94b5414");
@@ -53,25 +58,41 @@ public class EnableDevMode : BaseGameMod {
         // Production
         var newProdCategoryList = (from category in categoryList
                                    where category.name is "CraftingTier1"
-                                       or "ProductionTier1"
+                                       or "CraftingTier2"
+                                       or "CraftingTier3"
                                        or "CraftingTierSubmarine"
+                                       or "ProductionTier0"
+                                       or "ProductionTier1"
+                                       or "ProductionTier2"
+                                       or "ProductionTier3"
                                        or "ProductionTierSubmarine"
                                    select category).ToArray();
 
         // Research
         var newResearchCategoryList = (from category in categoryList
-                                       where category.name is "ResearchTier1"
+                                       where category.name is "ResearchTier0"
+                                           or "ResearchTier1"
+                                           or "ResearchTier2"
+                                           or "ResearchTier3"
                                            or "CraftingResearchTier1"
                                        select category).ToArray();
 
         // Refinery
         var newRefineryCategoryList = (from category in categoryList
-                                       where category.name is "RefinementTier1"
+                                       where category.name is "RefinementTier0"
+                                           or "RefinementTier1"
+                                           or "RefinementTier2"
+                                           or "RefinementTier3"
                                            or "CraftingRefineryTier1"
                                        select category).ToArray();
 
         // Scrap
-        var newScrapCategoryList = new[] {categoryList.GetCategory("ScrapTier1")};
+        var newScrapCategoryList = (from category in categoryList
+                                    where category.name is "ScrapTier0"
+                                        or "ScrapTier1"
+                                        or "ScrapTier2"
+                                        or "ScrapTier3"
+                                    select category).ToArray();
 
         foreach (var recipe in RuntimeAssetDatabase.Get<Recipe>()) {
             // Do first so even if it's one that should be excluded, it's still 'free'.
@@ -114,10 +135,10 @@ public class EnableDevMode : BaseGameMod {
                                where def.Prefabs.Length > 0
                                select def.Prefabs[0]) {
             if (prefab.TryGetComponent<FactoryStation>(out var factoryStation)) {
-                factoryStation.TimeEfficiency = 1;
+                factoryStation.TimeEfficiency = 10;
             }
             if (prefab.TryGetComponent<Worktable>(out var worktable)) {
-                worktable.TimeEfficiency = 10; // Because they are slower for whatever reason and 1f doesn't fix it.
+                worktable.TimeEfficiency = 10;
             }
             if (prefab.TryGetComponent<Upgradable>(out var upgradable)) {
                 upgradable.m_cost             = [];
@@ -127,6 +148,27 @@ public class EnableDevMode : BaseGameMod {
         }
 
         base.OnInitData();
+    }
+}
+
+// Because train upgrades appearing in the worktable causes an exception that results in the recipe being invisible.
+// Which results in nothing being visible from the sub worktable.
+// This works around that.
+[HarmonyPatch]
+[UsedImplicitly]
+public static class FixIndexOutOfRangeException {
+    [HarmonyTargetMethod]
+    [UsedImplicitly]
+    public static MethodBase TargetMethod() {
+        return typeof(ProducerExtensions).GetMethod(nameof(ProducerExtensions.IsVisible), BindingFlags.Public | BindingFlags.Static);
+    }
+
+    [UsedImplicitly]
+    [HarmonyPostfix]
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    public static bool Prefix(ref bool __result) {
+        __result = true;
+        return false;
     }
 }
 
